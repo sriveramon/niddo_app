@@ -1,2 +1,2 @@
-# niddo-app
+# niddo_app
 Niddo App UI
