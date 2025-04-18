@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'screens/main_screen.dart';
 import 'services/auth_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // Add this import
+
+final FlutterSecureStorage _secureStorage = FlutterSecureStorage(); // Instance for secure storage
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
@@ -62,12 +66,19 @@ class _LoginScreenState extends State<LoginScreen> {
       emailController.text,
       passwordController.text,
     );
-
     if (token != null) {
-      // Navigate without flicker
+      // Store the token securely
+      await _secureStorage.write(key: 'jwt_token', value: token);
+      
+      // Decode the JWT and extract the username
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      print(decodedToken); // Debugging line to check the decoded token
+      String userName = decodedToken['user_name']; // Adjust field name if necessary
+
+      // Navigate to MainScreen with the decoded username
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const MainScreen()),
+        MaterialPageRoute(builder: (_) => MainScreen(userName: userName)),
       );
     } else {
       setState(() => isLoading = false);
@@ -101,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Center(
                       child: Column(
                         children: [
-                          Image.asset('assets/logo.png', height: 150),
+                          Image.asset('assets/logo_no_background.png', height: 150),
                           const SizedBox(height: 8),
                         ],
                       ),
