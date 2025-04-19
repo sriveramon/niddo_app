@@ -5,10 +5,17 @@ import '../widgets/today_visitors_widget.dart';
 import '../widgets/section_divider.dart'; 
 import '../screens/new_reservation_screen.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
   final String userName;
 
   const MainScreen({super.key, required this.userName});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  final GlobalKey<TodayReservationsWidgetState> _todayReservationsKey = GlobalKey();
 
   Widget _sectionTitle(String title) {
     return Padding(
@@ -51,19 +58,19 @@ class MainScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Welcome $userName 👋', style: const TextStyle(fontSize: 24)),
+            Text('Welcome ${widget.userName} 👋', style: const TextStyle(fontSize: 24)),
 
-            const SectionDivider(), // 🔸 Divider after welcome
+            const SectionDivider(),
 
             _sectionTitle("Latest News"),
             _sectionCard(child: const DummyNewsWidget()),
 
-            const SectionDivider(), // 🔸 Divider between sections
+            const SectionDivider(),
 
             _sectionTitle("Today's Reservations"),
-            _sectionCard(child: const TodayReservationsWidget()),
+            _sectionCard(child: TodayReservationsWidget(key: _todayReservationsKey)),
 
-            const SectionDivider(), // 🔸 Divider between sections
+            const SectionDivider(),
 
             _sectionTitle("Today's Visitors"),
             _sectionCard(child: const TodayVisitorsWidget()),
@@ -80,14 +87,18 @@ class MainScreen extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.calendar_today),
                   title: const Text('New Reservation'),
-                  onTap: () {
+                  onTap: () async {
                     Navigator.pop(context);
-                    Navigator.push(
+                    final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const NewReservationScreen(),
                       ),
                     );
+
+                    if (result == true) {
+                      _todayReservationsKey.currentState?.refresh();
+                    }
                   },
                 ),
                 ListTile(

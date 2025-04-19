@@ -3,7 +3,7 @@ import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // Import the secure storage
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 import '../models/amenity.dart';
@@ -18,7 +18,7 @@ class NewReservationScreen extends StatefulWidget {
 class _NewReservationScreenState extends State<NewReservationScreen> {
   final _formKey = GlobalKey<FormState>();
   final Logger _logger = Logger();
-  final FlutterSecureStorage _secureStorage = FlutterSecureStorage(); // Secure storage instance
+  final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   Amenity? selectedAmenity;
   DateTime? selectedDate;
@@ -42,25 +42,23 @@ class _NewReservationScreenState extends State<NewReservationScreen> {
     return url;
   }
 
-  // Function to fetch amenities with the JWT token in the Authorization header
   Future<void> _fetchAmenities() async {
     try {
-      final token = await _secureStorage.read(key: 'jwt_token'); // Retrieve the JWT token
+      final token = await _secureStorage.read(key: 'jwt_token');
 
       if (token == null) {
         _logger.e('JWT token not found.');
-        return; // Handle the case where the token is not found
+        return;
       }
 
-      // Decode the JWT and extract the condo_id
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-      String condoId = decodedToken['condo_id']; // Adjust field name if necessary
+      String condoId = decodedToken['condo_id'];
 
       final url = Uri.parse('$baseUrl/amenities/amenitiesbycondo/$condoId');
       final response = await http.get(
         url,
         headers: {
-          'Authorization': 'Bearer $token', // Include token in the Authorization header
+          'Authorization': 'Bearer $token',
         },
       );
 
@@ -110,7 +108,6 @@ class _NewReservationScreenState extends State<NewReservationScreen> {
     }
   }
 
-  // Submit the reservation and call the API
   void _submitReservation() async {
     if (_formKey.currentState!.validate()) {
       _logger.i('Amenity: ${selectedAmenity?.name}');
@@ -119,43 +116,53 @@ class _NewReservationScreenState extends State<NewReservationScreen> {
       _logger.i('End Time: $endTime');
 
       try {
-        final token = await _secureStorage.read(key: 'jwt_token'); // Retrieve the JWT token
-
+        final token = await _secureStorage.read(key: 'jwt_token');
         if (token == null) {
           _logger.e('JWT token not found.');
-          return; // Handle the case where the token is not found
+          return;
         }
 
-        // Decode the JWT and extract the user ID
         Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-        String userId = decodedToken['user_id']; // Ensure it's a string
-        String amenityId = selectedAmenity!.id.toString(); // Assuming Amenity model has 'id' field
+        String userId = decodedToken['user_id'];
+        String amenityId = selectedAmenity!.id.toString();
 
-        // Prepare the payload
         final payload = {
           'user_id': userId,
           'amenity_id': amenityId,
-          'date': selectedDate?.toIso8601String().split('T')[0], // Format date to "yyyy-mm-dd"
-          'start_time': '${startTime?.hour.toString().padLeft(2, '0')}:${startTime?.minute.toString().padLeft(2, '0')}:00', // Format time to "HH:mm:ss"
-          'end_time': '${endTime?.hour.toString().padLeft(2, '0')}:${endTime?.minute.toString().padLeft(2, '0')}:00', // Format time to "HH:mm:ss"
+          'date': selectedDate?.toIso8601String().split('T')[0],
+          'start_time':
+              '${startTime?.hour.toString().padLeft(2, '0')}:${startTime?.minute.toString().padLeft(2, '0')}:00',
+          'end_time':
+              '${endTime?.hour.toString().padLeft(2, '0')}:${endTime?.minute.toString().padLeft(2, '0')}:00',
           'status': 'pending'
         };
 
         _logger.i('Payload: $payload');
 
-        final url = Uri.parse('$baseUrl/reservations');
+        final url = Uri.parse('$baseUrl/reservations/');
         final response = await http.post(
           url,
           headers: {
-            'Authorization': 'Bearer $token', // Include token in the Authorization header
+            'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
-          body: json.encode(payload), // Send the payload as a JSON string
+          body: json.encode(payload),
         );
 
         if (response.statusCode == 201) {
           _logger.i('Reservation successfully created.');
-          Navigator.pop(context); // Go back to the previous screen
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Reservation submitted. Please wait for approval.'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+
+          await Future.delayed(const Duration(seconds: 2));
+
+          Navigator.pop(context, true); // ✅ Pass success back to MainScreen
         } else {
           _logger.e('Failed to create reservation: ${response.statusCode}');
         }
@@ -178,7 +185,8 @@ class _NewReservationScreenState extends State<NewReservationScreen> {
                 child: ListView(
                   children: [
                     DropdownButtonFormField<Amenity>(
-                      decoration: const InputDecoration(labelText: 'Select Amenity'),
+                      decoration:
+                          const InputDecoration(labelText: 'Select Amenity'),
                       items: amenities.map((amenity) {
                         return DropdownMenuItem(
                           value: amenity,

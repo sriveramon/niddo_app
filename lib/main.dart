@@ -52,6 +52,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool isLoading = false;
 
+   @override
+  void initState() {
+    super.initState();
+    
+    // Set default email and password
+    emailController.text = 'test@test.com'; // Default email
+    passwordController.text = 'SRm011290'; // Default password
+  }
+
   @override
   void dispose() {
     emailController.dispose();
@@ -72,7 +81,6 @@ class _LoginScreenState extends State<LoginScreen> {
       
       // Decode the JWT and extract the username
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-      print(decodedToken); // Debugging line to check the decoded token
       String userName = decodedToken['user_name']; // Adjust field name if necessary
 
       // Navigate to MainScreen with the decoded username
