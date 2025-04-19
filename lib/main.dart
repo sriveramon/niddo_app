@@ -3,7 +3,9 @@ import 'screens/main_screen.dart';
 import 'services/auth_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // Add this import
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'generated/l10n.dart'; // Import the generated localization file
 
 final FlutterSecureStorage _secureStorage = FlutterSecureStorage(); // Instance for secure storage
 
@@ -30,6 +32,17 @@ class NiddoApp extends StatelessWidget {
           border: OutlineInputBorder(),
         ),
       ),
+      // Add localizationsDelegates and supportedLocales
+      localizationsDelegates: [
+        S.delegate,  // Use the generated localization delegate
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', ''), // English
+        Locale('es', ''), // Spanish
+      ],
       home: const LoginScreen(),
     );
   }
@@ -52,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool isLoading = false;
 
-   @override
+  @override
   void initState() {
     super.initState();
     
@@ -103,13 +116,13 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 48),
           child: isLoading
-              ? const Center(
+              ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 16),
-                      Text("Logging in...", style: TextStyle(fontSize: 16)),
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 16),
+                      Text(S.of(context).logging_in, style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 )
@@ -128,13 +141,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Spacer(),
                     TextField(
                       controller: emailController,
-                      decoration: const InputDecoration(labelText: 'Email'),
+                      decoration: InputDecoration(labelText: S.of(context).email), // Use localized string
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: passwordController,
                       obscureText: true,
-                      decoration: const InputDecoration(labelText: 'Password'),
+                      decoration: InputDecoration(labelText: S.of(context).password), // Use localized string
                     ),
                     const SizedBox(height: 24),
                     SizedBox(
@@ -153,9 +166,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           child: Container(
                             alignment: Alignment.center,
-                            child: const Text(
-                              'Log In',
-                              style: TextStyle(fontSize: 18, color: Colors.white),
+                            child: Text(
+                              S.of(context).login,  // Use localized string
+                              style: const TextStyle(fontSize: 18, color: Colors.white),
                             ),
                           ),
                         ),

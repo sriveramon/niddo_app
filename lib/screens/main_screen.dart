@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import '../widgets/dummy_news_widget.dart';
 import '../widgets/today_reservations_widget.dart';
 import '../widgets/today_visitors_widget.dart';
-import '../widgets/section_divider.dart'; 
+import '../widgets/section_divider.dart';
 import '../screens/new_reservation_screen.dart';
 import '../screens/new_visitor_screen.dart';
-
+import '../generated/l10n.dart'; // Import the generated localization file
 class MainScreen extends StatefulWidget {
   final String userName;
 
@@ -18,6 +18,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final GlobalKey<TodayReservationsWidgetState> _todayReservationsKey = GlobalKey();
   final GlobalKey<TodayVisitorsWidgetState> _todayVisitsKey = GlobalKey();
+
   Widget _sectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -44,7 +45,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Niddo"),
+        title: Text(S.of(context).appTitle),
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
@@ -59,21 +60,18 @@ class _MainScreenState extends State<MainScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Welcome ${widget.userName} 👋', style: const TextStyle(fontSize: 24)),
-
+            Text(
+              S.of(context).welcomeMessage(widget.userName),  // Call the function with the userName
+              style: const TextStyle(fontSize: 24),
+            ),
             const SectionDivider(),
-
-            _sectionTitle("Latest News"),
+            _sectionTitle(S.of(context).latestNewsTitle),
             _sectionCard(child: const DummyNewsWidget()),
-
             const SectionDivider(),
-
-            _sectionTitle("Today's Reservations"),
+            _sectionTitle(S.of(context).todaysReservationsTitle),
             _sectionCard(child: TodayReservationsWidget(key: _todayReservationsKey)),
-
             const SectionDivider(),
-
-            _sectionTitle("Today's Visitors"),
+            _sectionTitle(S.of(context).todaysVisitorsTitle),
             _sectionCard(child: TodayVisitorsWidget(key: _todayVisitsKey)),
           ],
         ),
@@ -87,7 +85,7 @@ class _MainScreenState extends State<MainScreen> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.calendar_today),
-                  title: const Text('New Reservation'),
+                  title: Text(S.of(context).newReservation),
                   onTap: () async {
                     Navigator.pop(context);
                     final result = await Navigator.push(
@@ -104,8 +102,8 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.person_add),
-                  title: const Text('New Visitor'),
-                  onTap: ()async {
+                  title: Text(S.of(context).newVisitor),
+                  onTap: () async {
                     Navigator.pop(context);
                     final result = await Navigator.push(
                       context,

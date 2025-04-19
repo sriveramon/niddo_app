@@ -1,0 +1,15 @@
+{
+  "@@locale": "es",
+  "email": "Correo electrónico",
+  "password": "Contraseña",
+  "login": "Iniciar sesión",
+  "logging_in": "Iniciando sesión...",
+  "welcomeMessage": "Bienvenido {userName} 👋",
+  "latestNewsTitle": "Últimas Noticias",
+  "todaysReservationsTitle": "Reservas de Hoy",
+  "todaysVisitorsTitle": "Visitantes de Hoy",
+  "newReservation": "Nueva Reserva",
+  "newVisitor": "Nuevo Visitante",
+  "sectionDivider": "—",
+  "appTitle": "Niddo"
+}
