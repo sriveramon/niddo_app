@@ -4,6 +4,7 @@ import '../widgets/today_reservations_widget.dart';
 import '../widgets/today_visitors_widget.dart';
 import '../widgets/section_divider.dart'; 
 import '../screens/new_reservation_screen.dart';
+import '../screens/new_visitor_screen.dart';
 
 class MainScreen extends StatefulWidget {
   final String userName;
@@ -16,7 +17,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final GlobalKey<TodayReservationsWidgetState> _todayReservationsKey = GlobalKey();
-
+  final GlobalKey<TodayVisitorsWidgetState> _todayVisitsKey = GlobalKey();
   Widget _sectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -73,7 +74,7 @@ class _MainScreenState extends State<MainScreen> {
             const SectionDivider(),
 
             _sectionTitle("Today's Visitors"),
-            _sectionCard(child: const TodayVisitorsWidget()),
+            _sectionCard(child: TodayVisitorsWidget(key: _todayVisitsKey)),
           ],
         ),
       ),
@@ -104,9 +105,18 @@ class _MainScreenState extends State<MainScreen> {
                 ListTile(
                   leading: const Icon(Icons.person_add),
                   title: const Text('New Visitor'),
-                  onTap: () {
+                  onTap: ()async {
                     Navigator.pop(context);
-                    // Add navigation to new visitor screen here
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NewVisitorScreen(),
+                      ),
+                    );
+
+                    if (result == true) {
+                      _todayVisitsKey.currentState?.refresh();
+                    }
                   },
                 ),
               ],
