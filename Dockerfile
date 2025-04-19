@@ -1,24 +1,24 @@
-# Step 1: Use the official Flutter image with Dart SDK 3.x
+# Step 1: Use the official Flutter image with Dart SDK 3.x for building the app
 FROM ghcr.io/cirruslabs/flutter:stable AS build
 
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the project files into the container
+# Copy all project files into the container
 COPY . .
 
-# Step 2: Get dependencies and build the app
+# Get dependencies and build the web app
 RUN flutter pub get
 RUN flutter build web
 
-# Step 3: Use Nginx to serve the web app
+# Step 2: Use Nginx to serve the built app
 FROM nginx:alpine
 
-# Copy the Flutter build output into Nginx's HTML directory
+# Copy the built Flutter web app into Nginx's HTML directory
 COPY --from=build /app/build/web /usr/share/nginx/html
 
-# Expose port 80 for serving
+# Expose port 80 for serving the app
 EXPOSE 80
 
-# Step 4: Start the Nginx server
+# Start the Nginx server
 CMD ["nginx", "-g", "daemon off;"]
