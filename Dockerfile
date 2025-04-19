@@ -1,5 +1,5 @@
-# Step 1: Use the official Flutter image
-FROM cirrusci/flutter:stable AS build
+# Step 1: Use the official Flutter image with Dart SDK 3.x
+FROM ghcr.io/cirruslabs/flutter:stable AS build
 
 # Set the working directory
 WORKDIR /app
