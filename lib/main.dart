@@ -10,7 +10,7 @@ import 'generated/l10n.dart'; // Import the generated localization file
 final FlutterSecureStorage _secureStorage = FlutterSecureStorage(); // Instance for secure storage
 
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");
+  await dotenv.load();
   runApp(const NiddoApp());
 }
 
